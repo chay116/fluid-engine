@@ -32,8 +32,6 @@ private:
 
     int m_width{WINDOW_WIDTH};
     int m_height{WINDOW_HEIGHT};
-    float m_color[3] = {0.0, 0.0, 0.0};
-
     FluidUPtr m_fluid;
     ProgramUPtr m_program;
     VertexLayoutUPtr m_vertexLayout;

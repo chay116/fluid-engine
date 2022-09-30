@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
 project(fluid-engine)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 set(WINDOW_NAME )
-set(WINDOW_WIDTH 960)
-set(WINDOW_HEIGHT 540)
+set(WINDOW_WIDTH 512)
+set(WINDOW_HEIGHT 512)
 
 if (APPLE)
     set(CMAKE_CXX_FLAGS "-framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo")

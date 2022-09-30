@@ -3,7 +3,6 @@
 //
 
 #include "Context.h"
-#include <imgui.h>
 #include <algorithm>
 
 void Context::Screenshot(const char *path){
@@ -40,45 +39,25 @@ void Context::Reshape(int width, int height) {
     glViewport(0, 0, m_width, m_height);
 }
 
-void Context::MouseMove(double x, double y) {
-    return ;
-}
 #include <iostream>
 void Context::MouseButton(int button, int action, double x, double y) {
     if (button == GLFW_MOUSE_BUTTON_RIGHT) {
         if (action == GLFW_PRESS) {
             std::cout << m_width << " " << m_height << std::endl;
             std::cout << x << " " << y << std::endl;
-            m_fluid->AddingPoint(x * m_fluid->nx * 2 / (float)m_width, (m_height - y) * m_fluid->ny * 2 / (float)m_height);
-//            m_prevMousePos = glm::vec2((float)x, (float)y);
-//            m_cameraControl = true;
+            m_fluid->AddingPoint(x * m_fluid->nx / (float)m_width,
+                                 (m_height - y) * m_fluid->ny / (float)m_height);
         }
     }
 }
 
 void Context::Render() {
-//    glClearColor(0.1f, 0.2f, 0.3f, 0.0f);
-
-//    if (ImGui::Begin("ui window")) {
-//        ImGui::ColorEdit3("##RingColor", m_color);
-//        if (ImGui::CollapsingHeader("fluid", ImGuiTreeNodeFlags_DefaultOpen)) {
-//            ImGui::DragFloat3("number", glm::value_ptr(m_particle.number), 0.01f);
-//            ImGui::DragFloat3("viscocity", glm::value_ptr(m_particle.viscocity), 100);
-//            ImGui::ColorEdit3("color", glm::value_ptr(m_particle.color));
-//        }
-//
-//        ImGui::Button("Start", &m_start);
-//        ImGui::Separator();
-//    }
-//    ImGui::End();
-
     glClear(GL_COLOR_BUFFER_BIT);
-
     m_program->Use();
     m_fluid->OnFrame();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindTexture( GL_TEXTURE_2D, 0);
-//    glUniform1i(glGetUniformLocation(m_program->Get(), "tex"), 0);
+    glUniform1i(glGetUniformLocation(m_program->Get(), "tex"), 0);
 }
 
 bool Context::Init() {

@@ -8,47 +8,38 @@
 #include "Grid.h"
 #include <vector>
 #include <thread>
-#define FOR_EACH_CELL
+#include <list>
 
 CLASS_PTR(Fluid)
 
 class Fluid {
 public:
     Fluid();
-    ~Fluid() = default;
+    ~Fluid();
     void SimulationStep();
     void OnFrame();
     void AddingPoint(float x, float y);
     GLuint texture{0};
-
-    enum class SwapT{
-        NOTHING,
-        DENSITY,
-        VELOCITY
-    };
-    static constexpr int nx = 512;
-    static constexpr int ny = 512;
+    static constexpr int nx = 256;
+    static constexpr int ny = 256;
 
 private:
-    void MultiThreading(void (Fluid *, int, int), SwapT flag);
-    static void MoveOldProperty(Fluid *target, int start, int end);
-    static void VorticityConfinement(Fluid *target, int start, int end);
-    static void AdvectDensity(Fluid *target, int start, int end);
-    static void AdvectVelocity(Fluid *target, int start, int end);
-    static void DiffuseDensity(Fluid *target, int start, int end);
-    static void InitializeP(Fluid *target, int start, int end);
-    static void ProjectDiv(Fluid *target, int start, int end);
-    static void ProjectVelocity(Fluid *target, int start, int end);
-    static void DiffuseVelocity(Fluid *target, int start, int end);
-    static void ExtractZero(Fluid *target, int start, int end);
-
+    void MoveOldProperty(int start, int end);
+    void VorticityConfinement(int start, int end);
+    void AdvectDensity(int start, int end);
+    void AdvectVelocity(int start, int end);
+    void DiffuseDensity(int start, int end);
+    void InitializeP(int start, int end);
+    void ProjectDiv(int start, int end);
+    void ProjectVelocity(int start, int end);
+    void DiffuseVelocity(int start, int end);
+    void ExtractZero(int start, int end);
     void AddDensity(int px, int py, int r = 10, float value = 0.5f);
-    void Draw(const vec2f *data, int n, GLenum mode);
-    void DrawCircle(float x, float y, float r, int n = 100);
 
+    static void ThreadSwapping(Fluid* target, int start, int end);
+    static void ThreadCalculating(Fluid* target, int start, int end);
+    float Curl(int x, int y);
     static float randf(float a, float b);
-    static float sign(float x);
-    static float Curl(Fluid *target, int x, int y);
     static uint32_t rgba32(uint32_t r, uint32_t g, uint32_t b, uint32_t a);
     static uint32_t rgba(float r, float g, float b, float a);
 
@@ -61,10 +52,12 @@ private:
     std::vector<vec2f> m_addPoint;
 
     Grid<float> p;
+    Grid<float> p2;
     Grid<float> div;
     Grid<float> abs_curl;
+    std::list<std::thread> m_threads;
 
-
+    bool m_finished;
     static constexpr float vorticity = 10.0f;
     static constexpr float dt = 0.02f;
     static constexpr int iterations = 5;
